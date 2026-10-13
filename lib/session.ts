@@ -2,6 +2,7 @@ import "server-only";
 
 import { createHash, randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 
 export const SESSION_COOKIE = "sandbox_session";
@@ -91,14 +92,16 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
 }
 
 export function setSessionCookie(
-  response: Response,
+  response: NextResponse,
   token: string,
   expiresAt: string
 ) {
-  response.headers.append(
-    "Set-Cookie",
-    `${SESSION_COOKIE}=${encodeURIComponent(token)}; Max-Age=${SESSION_TTL_SECONDS}; Expires=${new Date(expiresAt).toUTCString()}; Path=/; HttpOnly; SameSite=Lax${
-      process.env.NODE_ENV === "production" ? "; Secure" : ""
-    }`
-  );
+  response.cookies.set(SESSION_COOKIE, token, {
+    expires: new Date(expiresAt),
+    httpOnly: true,
+    maxAge: SESSION_TTL_SECONDS,
+    path: "/",
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  });
 }
