@@ -153,3 +153,47 @@ button:hover {
   line-height: 1.6;
   margin: 28px 0;
 }
+
+.lead-test-card {
+  max-width: 900px;
+}
+
+.lead-test-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  margin: 28px 0;
+}
+
+.lead-test-panel {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.lead-test-panel h2 {
+  font-size: 1.2rem;
+  margin: 0 0 10px;
+}
+
+.lead-test-panel code,
+.lead-test-results code {
+  overflow-wrap: anywhere;
+}
+
+.lead-test-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.lead-test-actions button {
+  padding: 9px 13px;
+}
+
+.lead-test-results {
+  border-top: 1px solid var(--border);
+  line-height: 1.6;
+  padding-top: 12px;
+}

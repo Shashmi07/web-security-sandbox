@@ -26,6 +26,9 @@ export default async function DashboardPage() {
         <Link href="/logout" className="button-link secondary-button">
           Sign out
         </Link>
+        <Link href="/lead-access-test" className="button-link">
+          Test lead access
+        </Link>
       </section>
     </main>
   );

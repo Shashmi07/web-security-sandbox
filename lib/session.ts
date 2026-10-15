@@ -11,6 +11,7 @@ const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7;
 type SessionUser = {
   id: string;
   email: string;
+  role: string;
 };
 
 function hashSessionToken(token: string) {
@@ -66,6 +67,7 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
     .select("user_id, expires_at")
     .eq("token_hash", hashSessionToken(token))
     .gt("expires_at", new Date().toISOString())
+    .is("revoked_at", null)
     .maybeSingle();
 
   if (sessionError) {
@@ -79,7 +81,7 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
 
   const { data: user, error: userError } = await supabase
     .from("app_users")
-    .select("id, email")
+    .select("id, email, role")
     .eq("id", session.user_id)
     .maybeSingle();
 
