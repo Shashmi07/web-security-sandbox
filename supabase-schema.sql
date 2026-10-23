@@ -11,6 +11,10 @@ create table if not exists public.app_users (
 create table if not exists public.leads (
   id uuid primary key default gen_random_uuid(),
   name text not null,
+  email text not null,
+  phone text not null,
+  status text not null default 'new'
+    check (status in ('new', 'contacted', 'qualified', 'converted', 'lost')),
   owner_id uuid not null references public.app_users(id),
   created_at timestamptz not null default now()
 );

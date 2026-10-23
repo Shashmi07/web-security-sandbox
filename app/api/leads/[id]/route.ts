@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { supabase } from "@/lib/supabase";
 import { canAccessLead } from "@/lib/lead-access";
+import { leadUpdateSchema } from "@/lib/lead-schema";
+import { serverError } from "@/lib/api-handler";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -35,7 +37,7 @@ async function authorizeLead(id: string) {
 
   const { data: lead, error } = await supabase
     .from("leads")
-    .select("id, name, ownerId:owner_id")
+    .select("id, name, email, phone, status, ownerId:owner_id")
     .eq("id", id)
     .maybeSingle();
 
@@ -90,11 +92,8 @@ export async function GET(
     return NextResponse.json({
       lead: result.lead,
     });
-  } catch {
-    return NextResponse.json(
-      { message: "Request failed." },
-      { status: 500 }
-    );
+  } catch (error) {
+    return serverError(error, "Lead retrieval request error");
   }
 }
 
@@ -112,25 +111,19 @@ export async function PATCH(
 
     const body: unknown = await request.json();
 
-    if (
-      typeof body !== "object" ||
-      body === null ||
-      !("name" in body) ||
-      typeof body.name !== "string" ||
-      !body.name.trim() ||
-      body.name.trim().length > 200
-    ) {
+    const parsed = leadUpdateSchema.safeParse(body);
+    if (!parsed.success || Object.keys(parsed.data).length === 0) {
       return NextResponse.json(
-        { message: "A valid lead name is required." },
+        { message: "Invalid lead data." },
         { status: 400 }
       );
     }
 
     const { data, error } = await supabase
       .from("leads")
-      .update({ name: body.name.trim() })
+      .update(parsed.data)
       .eq("id", id)
-      .select("id, name, ownerId:owner_id")
+      .select("id, name, email, phone, status, ownerId:owner_id")
       .single();
 
     if (error || !data) {
@@ -143,11 +136,8 @@ export async function PATCH(
     }
 
     return NextResponse.json({ lead: data });
-  } catch {
-    return NextResponse.json(
-      { message: "Invalid request." },
-      { status: 400 }
-    );
+  } catch (error) {
+    return serverError(error, "Lead update request error");
   }
 }
 
@@ -180,10 +170,7 @@ export async function DELETE(
     return NextResponse.json({
       message: "Lead deleted successfully.",
     });
-  } catch {
-    return NextResponse.json(
-      { message: "Request failed." },
-      { status: 500 }
-    );
+  } catch (error) {
+    return serverError(error, "Lead deletion request error");
   }
 }

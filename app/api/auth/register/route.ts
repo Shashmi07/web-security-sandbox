@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { hashPassword } from "@/lib/password";
-
+import { serverError } from "@/lib/api-handler";
 
 
 export async function POST(request: Request) {
@@ -74,10 +74,7 @@ export async function POST(request: Request) {
       { message: "Registration successful." },
       { status: 201 }
     );
-  } catch {
-    return NextResponse.json(
-      { message: "Invalid request or registration failed." },
-      { status: 400 }
-    );
+  } catch (error) {
+    return serverError(error, "Registration request error");
   }
 }

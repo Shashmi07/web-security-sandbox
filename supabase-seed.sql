@@ -31,18 +31,27 @@ set email = excluded.email,
     password_hash = excluded.password_hash,
     role = excluded.role;
 
-insert into public.leads (id, name, owner_id)
+insert into public.leads (id, name, email, phone, status, owner_id)
 values
   (
     '10000000-0000-0000-0000-000000000001',
     'User A test lead',
+    'lead-a@example.com',
+    '+15550100001',
+    'new',
     '00000000-0000-0000-0000-000000000002'
   ),
   (
     '10000000-0000-0000-0000-000000000002',
     'User B test lead',
+    'lead-b@example.com',
+    '+15550100002',
+    'new',
     '00000000-0000-0000-0000-000000000003'
   )
 on conflict (id) do update
 set name = excluded.name,
+    email = excluded.email,
+    phone = excluded.phone,
+    status = excluded.status,
     owner_id = excluded.owner_id;

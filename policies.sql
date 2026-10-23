@@ -28,26 +28,26 @@ CREATE POLICY "Users can read own leads"
 ON public.leads
 FOR SELECT
 TO authenticated
-USING ((SELECT auth.uid()) = owner_id);
+USING (auth.uid() = owner_id);
 
 -- 6. INSERT: Create leads only for yourself
 CREATE POLICY "Users can insert own leads"
 ON public.leads
 FOR INSERT
 TO authenticated
-WITH CHECK ((SELECT auth.uid()) = owner_id);
+WITH CHECK (auth.uid() = owner_id);
 
 -- 7. UPDATE: Update only your own leads
 CREATE POLICY "Users can update own leads"
 ON public.leads
 FOR UPDATE
 TO authenticated
-USING ((SELECT auth.uid()) = owner_id)
-WITH CHECK ((SELECT auth.uid()) = owner_id);
+USING (auth.uid() = owner_id)
+WITH CHECK (auth.uid() = owner_id);
 
 -- 8. DELETE: Delete only your own leads
 CREATE POLICY "Users can delete own leads"
 ON public.leads
 FOR DELETE
 TO authenticated
-USING ((SELECT auth.uid()) = owner_id);
+USING (auth.uid() = owner_id);

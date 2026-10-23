@@ -5,6 +5,12 @@ import {
   createSession,
   setSessionCookie,
 } from "@/lib/session";
+import {
+  checkLoginRateLimit,
+  clearLoginFailures,
+  recordLoginFailure,
+} from "@/lib/rate-limit";
+import { serverError } from "@/lib/api-handler";
 
 const INVALID_LOGIN_HASH =
   "$argon2id$v=19$m=19456,p=1,t=2$420HOlmakgHpt5zGyROf0w$b9PGqJTXNHGUclrf8HJMLVNphItMaF5tj8chNnjjBzo";
@@ -29,6 +35,21 @@ export async function POST(request: Request) {
     }
 
     const email = body.email.trim().toLowerCase();
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim()
+      || request.headers.get("x-real-ip")
+      || "unknown";
+    const rateLimit = checkLoginRateLimit(email, ip);
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { message: "Too many login attempts. Please try again later." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rateLimit.retryAfterSeconds) },
+        }
+      );
+    }
+
     const { data: user, error } = await supabase
       .from("app_users")
       .select("id, email, password_hash")
@@ -49,12 +70,14 @@ export async function POST(request: Request) {
     );
 
     if (!user || !passwordMatches) {
+      recordLoginFailure(email, ip);
       return NextResponse.json(
         { message: INVALID_LOGIN_MESSAGE },
         { status: 401 }
       );
     }
 
+    clearLoginFailures(email, ip);
     const { token, expiresAt } = await createSession(user.id);
     const response = NextResponse.json(
       { message: "Login successful." },
@@ -63,10 +86,6 @@ export async function POST(request: Request) {
     setSessionCookie(response, token, expiresAt);
     return response;
   } catch (error) {
-    console.error("Login request error:", error);
-    return NextResponse.json(
-      { message: "Login failed. Please try again." },
-      { status: 500 }
-    );
+    return serverError(error, "Login request error");
   }
 }

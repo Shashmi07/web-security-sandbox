@@ -29,6 +29,25 @@ psql "$env:DATABASE_URL" -f .\supabase-schema.sql
 psql "$env:DATABASE_URL" -f .\supabase-seed.sql
 ```
 
+Apply `policies.sql` after the schema and seed to enable lead row-level
+security. The policies restrict each authenticated Supabase user to rows where
+`auth.uid()` matches `owner_id`; anonymous table access is revoked.
+
+## Security checks
+
+- Session cookies are `HttpOnly`, `SameSite=Lax`, have a seven-day max age,
+  and are `Secure` in production. Logout deletes the server-side session
+  before expiring the cookie.
+- Login returns the same invalid-credentials message for unknown emails and
+  incorrect passwords, and limits failed attempts to five per email and IP
+  within 15 minutes.
+- Lead input is validated with Zod. Invalid input returns a safe `400`
+  response, while unexpected route errors are logged server-side and return a
+  generic `500` response.
+- Content Security Policy and baseline security headers are configured in
+  `next.config.ts`. Inspect the response headers in browser DevTools under
+  **Network** after starting the app.
+
 ## Getting Started
 
 First, run the development server:
