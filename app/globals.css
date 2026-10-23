@@ -1,8 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f4f7fb;
+  --foreground: #172033;
+  --muted: #647089;
+  --primary: #3454d1;
+  --primary-dark: #2843ad;
+  --border: #dce3f0;
 }
 
 @theme inline {
@@ -12,15 +16,184 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.landing-shell,
+.auth-shell,
+.dashboard-shell {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.landing-card,
+.auth-card,
+.dashboard-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgb(39 57 93 / 10%);
+  max-width: 520px;
+  padding: 48px;
+  width: 100%;
+}
+
+.landing-card h1,
+.auth-card h1,
+.dashboard-card h1 {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  letter-spacing: -0.05em;
+  line-height: 1;
+  margin: 12px 0 16px;
+}
+
+.eyebrow {
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.muted {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.landing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.button-link,
+button {
+  background: var(--primary);
+  border: 0;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  padding: 13px 20px;
+  transition: background 150ms ease;
+}
+
+.button-link:hover,
+button:hover {
+  background: var(--primary-dark);
+}
+
+.secondary-button {
+  background: #eef1fa;
+  color: var(--primary-dark);
+}
+
+.auth-form {
+  display: grid;
+  gap: 8px;
+  margin-top: 28px;
+}
+
+.auth-form label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.auth-form input {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font: inherit;
+  padding: 13px 14px;
+}
+
+.auth-form input:focus {
+  border-color: var(--primary);
+  outline: 3px solid rgb(52 84 209 / 15%);
+}
+
+.form-message {
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin: 12px 0 4px;
+  padding: 10px 12px;
+}
+
+.form-message.error {
+  background: #fff0f0;
+  color: #a52626;
+}
+
+.form-message.success {
+  background: #ecfbf2;
+  color: #176b3a;
+}
+
+.auth-footer {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 28px;
+  text-align: center;
+}
+
+.dashboard-copy {
+  line-height: 1.6;
+  margin: 28px 0;
+}
+
+.lead-test-card {
+  max-width: 900px;
+}
+
+.lead-test-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  margin: 28px 0;
+}
+
+.lead-test-panel {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.lead-test-panel h2 {
+  font-size: 1.2rem;
+  margin: 0 0 10px;
+}
+
+.lead-test-panel code,
+.lead-test-results code {
+  overflow-wrap: anywhere;
+}
+
+.lead-test-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.lead-test-actions button {
+  padding: 9px 13px;
+}
+
+.lead-test-results {
+  border-top: 1px solid var(--border);
+  line-height: 1.6;
+  padding-top: 12px;
 }
